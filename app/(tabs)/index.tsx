@@ -1,10 +1,10 @@
-import React, { useEffect } from "react";
-import { View, Text, Animated, StyleSheet, TouchableOpacity } from "react-native";
+import React, { useEffect, useRef } from "react";
+import { View, Text, Animated, StyleSheet, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 
 export default function HomeScreen() {
-  const titleOpacity = new Animated.Value(0);
-  const tapOpacity = new Animated.Value(0);
+  const titleOpacity = useRef(new Animated.Value(0)).current;
+  const tapOpacity = useRef(new Animated.Value(0)).current;
   const router = useRouter(); // 画面遷移用
 
   useEffect(() => {
@@ -24,16 +24,14 @@ export default function HomeScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <Pressable style={styles.container} onPress={() => router.push("/login")}>
       <Animated.Text style={[styles.title, { opacity: titleOpacity }]}>
         Future Diary
       </Animated.Text>
-      <TouchableOpacity onPress={() => router.push("/login")}>
-        <Animated.Text style={[styles.tapText, { opacity: tapOpacity }]}>
-          Tap to Start
-        </Animated.Text>
-      </TouchableOpacity>
-    </View>
+      <Animated.Text style={[styles.tapText, { opacity: tapOpacity }]}>
+        Tap to Start
+      </Animated.Text>
+    </Pressable>
   );
 }
 
