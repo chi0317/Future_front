@@ -1,7 +1,8 @@
 import React from "react";
 import { View, Button, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
-import * as Google from "expo-auth-session/providers/google";
+//import * as Google from "expo-auth-session/providers/google";
+import GoogleLoginButton from '../components/GoogleLoginButton';
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function LoginScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>ログイン</Text>
       {/* Googleでログインボタン */}
-      <Button title="Googleでログイン" onPress={handleLoginPress} />
+      <GoogleLoginButton />
     </View>
   );
 }
