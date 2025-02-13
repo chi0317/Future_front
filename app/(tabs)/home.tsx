@@ -1,59 +1,54 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { Calendar } from "react-native-calendars";
+import { View, Text, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { Calendar } from "react-native-calendars";
 
 export default function HomeScreen() {
-    const [diaryEntries, setDiaryEntries] = useState<{ id: string; date: string; text: string }[]>([]);
-    const router = useRouter();
+  const router = useRouter();
+  const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+  const [selectedDate, setSelectedDate] = useState(today);
 
-    useEffect(() => {
-    // バックエンドから未来日記データを取得する（仮のデータを使用）
-    setDiaryEntries([
-        { id: "1", date: "2025-02-12", text: "未来日記のエントリー1" },
-    ]);
-    }, []);
+  // 日付を押したときの処理
+  const handleDayPress = (day: { dateString: string }) => {
+    setSelectedDate(day.dateString); // 選択した日付を更新
+    router.push({
+      pathname: "/real_diary",
+      params: { date: day.dateString },
+    });
+  };
 
-    return (
+  useEffect(() => {
+    // markedDates を選択した日付だけに適用（前の選択をクリア）
+  }, [selectedDate]); // selectedDateが更新されるたびに再実行
+
+  // markedDates の設定
+  const markedDates = {
+    [selectedDate]: { selected: true, selectedColor: "blue", selectedTextColor: "white" }, // 選択日を青色に
+    [today]: selectedDate !== today ? { selected: true, selectedColor: "red", selectedTextColor: "white" } : {}, // 今日の日付を赤色に
+  };
+
+  return (
     <View style={styles.container}>
-        <Calendar
-        // 今日の日付をマーク
-        markedDates={{
-            "2025-02-12": { selected: true, marked: true, selectedColor: "blue" },
+      <Calendar
+        markedDates={markedDates}
+        onDayPress={handleDayPress}
+        theme={{
+          todayTextColor: "red",
+          selectedDayBackgroundColor: "blue",
+          selectedDayTextColor: "white",
         }}
-        />
-        <FlatList
-        data={diaryEntries}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-            <View style={styles.diaryItem}>
-                <Text style={styles.diaryDate}>{item.date}</Text>
-                <Text style={styles.diaryText}>{item.text}</Text>
-            </View>
-        )}
-        />
+      />
+      <View style={styles.diaryContainer}>
+        <Text style={styles.diaryTitle}>未来日記</Text>
+        <Text style={styles.diaryText}>バックエンドから取得した1日分の未来日記</Text>
+      </View>
     </View>
-    );
+  );
 }
 
-// スタイル
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 16,
-        backgroundColor: "#fff",
-    },
-    diaryItem: {
-        padding: 10,
-        marginVertical: 8,
-        backgroundColor: "#f0f0f0",
-        borderRadius: 5,
-    },
-    diaryDate: {
-        fontSize: 14,
-        fontWeight: "bold",
-    },
-    diaryText: {
-        fontSize: 16,
-    },
+  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  diaryContainer: { marginTop: 20, padding: 15, backgroundColor: "#f0f0f0", borderRadius: 10 },
+  diaryTitle: { fontSize: 18, fontWeight: "bold" },
+  diaryText: { fontSize: 16, marginTop: 5 },
 });
