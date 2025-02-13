@@ -1,47 +1,62 @@
-import { Stack, useRouter } from "expo-router";
-import { useFonts } from "expo-font";
-import { View, ActivityIndicator, TouchableOpacity, Image, Text } from "react-native";
+import { Tabs } from "expo-router";
+import { Image, TouchableOpacity, Text } from "react-native";
+import { useRouter } from "expo-router";
 
-export default function Layout() {
-  const [fontsLoaded] = useFonts({
-    Yomogi: require("../../assets/fonts/Yomogi-Regular.ttf"),
-  });
+// 画像をインポート
+const homeIcon = require("../../assets/images/home.png");
+const realDiaryIcon = require("../../assets/images/real_diary.png");
+const futureDiaryIcon = require("../../assets/images/future_diary.png");
+const logoutIcon = require("../../assets/images/logout.png");
 
-  const router = useRouter(); // 画面遷移用
-
-  if (!fontsLoaded) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+export default function TabLayout() {
+  const router = useRouter();
 
   return (
-    <Stack
+    <Tabs
       screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: "#ccc" },
-        headerTintColor: "#000",
-        headerTitleAlign: "center",
-        headerTitleStyle: { fontFamily: "sans-serif" },
-        headerRight: () =>
-          route.name !== "index" && route.name !== "login" ? ( // indexとloginでは非表示
-            <TouchableOpacity
-              onPress={() => router.push("/login")}
-              style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}
-            >
-              <Image
-                source={require("../../assets/images/logout.png")} // フリーアイコンを設定
-                style={{ width: 24, height: 24, marginRight: 5 }}
-              />
-              <Text style={{ fontSize: 16, color: "#000" }}>ログアウト</Text>
-            </TouchableOpacity>
-          ) : null,
+        headerStyle: { backgroundColor: "#ccc" }, // ヘッダーの背景を灰色
+        headerTintColor: "#000", // ヘッダーの文字色
+        headerTitleAlign: "center", // ヘッダーのタイトルを中央に
+        headerTitleStyle: { fontFamily: "sans-serif", fontSize: 18 }, // タイトルのスタイル
+
+        tabBarIcon: ({ focused }) => {
+          let icon;
+          if (route.name === "home") {
+            icon = homeIcon;
+          } else if (route.name === "real_diary") {
+            icon = realDiaryIcon;
+          } else if (route.name === "future_diary") {
+            icon = futureDiaryIcon;
+          }
+
+          return (
+            <Image
+              source={icon}
+              style={{ width: 24, height: 24, tintColor: focused ? "blue" : "gray" }}
+            />
+          );
+        },
+
+        tabBarLabelStyle: { fontSize: 12 },
+        tabBarActiveTintColor: "blue",
+        tabBarInactiveTintColor: "gray",
+
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={() => router.push("/login")}
+            style={{ flexDirection: "row", alignItems: "center", marginRight: 10 }}
+          >
+            <Image source={logoutIcon} style={{ width: 24, height: 24, marginRight: 5 }} />
+            <Text style={{ fontSize: 16, color: "#000" }}>ログアウト</Text>
+          </TouchableOpacity>
+        ),
       })}
     >
-      <Stack.Screen name="index" options={{ title: "Future Diary", headerRight: () => null }} />
-      <Stack.Screen name="login" options={{ title: "ログイン", headerRight: () => null }} />
-      <Stack.Screen name="home" options={{ title: "ホーム" }} />
-    </Stack>
+      <Tabs.Screen name="home" options={{ title: "ホーム" }} />
+      <Tabs.Screen name="real_diary" options={{ title: "リアル日記" }} />
+      <Tabs.Screen name="future_diary" options={{ title: "未来日記" }} />
+      <Tabs.Screen name="explore" options={{ href: null }} />
+
+    </Tabs>
   );
 }
